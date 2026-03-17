@@ -336,7 +336,7 @@ class SCGFoundation1Sampler:
         }
 
         if seed == -1:
-            seed = np.random.randint(0, 2**31 - 1)
+            seed = np.random.randint(0, 2**31)
 
         print(f"{LOG_PREFIX} Generating with {steps} steps, cfg={cfg_scale}, sampler={sampler_type}")
 
@@ -366,9 +366,9 @@ class SCGFoundation1Sampler:
 
         # Normalise to [-1, 1]
         peak = torch.max(torch.abs(output))
-        if peak > 0:
+        if torch.isfinite(peak) and peak > 0:
             output = output / peak
-        output = output.clamp(-1.0, 1.0)
+        output = output.nan_to_num(0.0).clamp(-1.0, 1.0)
 
         # Ensure [B, C, S] shape
         if output.dim() == 2:
