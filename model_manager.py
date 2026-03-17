@@ -143,8 +143,8 @@ def unload_model():
     if _cached_model is not None:
         try:
             _cached_model.to("cpu")
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"{LOG_PREFIX} Warning: could not move model to CPU during unload: {e}")
         _cached_model = None
         _cached_config = None
 
