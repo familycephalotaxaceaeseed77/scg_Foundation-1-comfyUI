@@ -1,0 +1,28 @@
+# ╔══════════════════════════════════════════════════════════════════════╗
+# ║  WARNING: Do NOT run `pip install -r requirements.txt` directly!  ║
+# ║                                                                    ║
+# ║  This node also requires `stable-audio-tools`, which MUST be      ║
+# ║  installed with --no-deps or it will break your ComfyUI venv      ║
+# ║  (it force-downgrades torch, numpy, pandas, and 20+ packages).    ║
+# ║                                                                    ║
+# ║  Instead, use ONE of these methods:                                ║
+# ║                                                                    ║
+# ║  Option 1 — ComfyUI Manager (recommended):                        ║
+# ║    Install via the Manager UI. It runs install.py automatically.   ║
+# ║                                                                    ║
+# ║  Option 2 — Manual install:                                        ║
+# ║    cd custom_nodes/scg_Foundation-1-comfyUI                        ║
+# ║    python install.py                                               ║
+# ║                                                                    ║
+# ║  Option 3 — Manual pip (two steps):                                ║
+# ║    pip install stable-audio-tools --no-deps                        ║
+# ║    pip install -r requirements.txt                                 ║
+# ╚══════════════════════════════════════════════════════════════════════╝
+
+huggingface_hub
+einops
+safetensors
+alias-free-torch
+einops-exts
+local-attention
+ema-pytorch
