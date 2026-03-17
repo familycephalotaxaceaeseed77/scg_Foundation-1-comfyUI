@@ -8,6 +8,7 @@ Provides four nodes:
   4. SCG Foundation-1 Random Prompt   – weighted random prompt generation
 """
 
+import contextlib
 import importlib.util
 import math
 import os
@@ -21,25 +22,71 @@ import numpy as np
 import torch
 import folder_paths
 
-# ComfyUI ships a stripped-down k_diffusion (comfy/k_diffusion) that lacks the
-# `external` submodule required by stable_audio_tools.  Inject the bundled
-# copy when missing so the node works inside a venv.
-def _ensure_k_diffusion_external():
+# ComfyUI ships a heavily modified k_diffusion (comfy/k_diffusion) that:
+#   1. Lacks the `external` submodule entirely.
+#   2. Patches sampling functions to require model_patcher (a ComfyUI-only
+#      construct) which breaks stable_audio_tools' DiTWrapper.
+# Both are fixed by loading bundled copies from this node directory and
+# temporarily swapping sampling during generation.
+
+def _load_bundled_k_diffusion():
+    """Load bundled external + sampling modules into k_diffusion."""
     try:
         import k_diffusion
     except ImportError:
         return
-    if hasattr(k_diffusion, 'external'):
-        return
-    _ext_path = os.path.join(os.path.dirname(__file__), '_k_diffusion_external.py')
-    spec = importlib.util.spec_from_file_location('k_diffusion.external', _ext_path)
-    ext_mod = importlib.util.module_from_spec(spec)
-    ext_mod.__package__ = 'k_diffusion'
-    spec.loader.exec_module(ext_mod)
-    k_diffusion.external = ext_mod
-    sys.modules['k_diffusion.external'] = ext_mod
 
-_ensure_k_diffusion_external()
+    node_dir = os.path.dirname(__file__)
+
+    # 1. Inject external submodule if missing
+    if not hasattr(k_diffusion, 'external'):
+        _ext_path = os.path.join(node_dir, '_k_diffusion_external.py')
+        spec = importlib.util.spec_from_file_location('k_diffusion.external', _ext_path)
+        ext_mod = importlib.util.module_from_spec(spec)
+        ext_mod.__package__ = 'k_diffusion'
+        spec.loader.exec_module(ext_mod)
+        k_diffusion.external = ext_mod
+        sys.modules['k_diffusion.external'] = ext_mod
+
+    # 2. Load the unmodified sampling module and stash it for use during generation
+    if not hasattr(k_diffusion, '_scg_real_sampling'):
+        _samp_path = os.path.join(node_dir, '_k_diffusion_sampling.py')
+        spec = importlib.util.spec_from_file_location('k_diffusion._scg_real_sampling', _samp_path)
+        samp_mod = importlib.util.module_from_spec(spec)
+        samp_mod.__package__ = 'k_diffusion'
+        spec.loader.exec_module(samp_mod)
+        k_diffusion._scg_real_sampling = samp_mod
+
+_load_bundled_k_diffusion()
+
+
+@contextlib.contextmanager
+def _use_real_k_diffusion_sampling():
+    """Temporarily swap ComfyUI's patched k_diffusion.sampling with the
+    unmodified upstream version so stable_audio_tools works correctly."""
+    try:
+        import k_diffusion
+    except ImportError:
+        yield
+        return
+
+    real = getattr(k_diffusion, '_scg_real_sampling', None)
+    if real is None:
+        yield
+        return
+
+    original = k_diffusion.sampling
+    original_sys = sys.modules.get('k_diffusion.sampling')
+    k_diffusion.sampling = real
+    sys.modules['k_diffusion.sampling'] = real
+    try:
+        yield
+    finally:
+        k_diffusion.sampling = original
+        if original_sys is not None:
+            sys.modules['k_diffusion.sampling'] = original_sys
+        else:
+            sys.modules.pop('k_diffusion.sampling', None)
 
 try:
     import comfy.model_management as model_management
@@ -293,20 +340,21 @@ class SCGFoundation1Sampler:
 
         print(f"{LOG_PREFIX} Generating with {steps} steps, cfg={cfg_scale}, sampler={sampler_type}")
 
-        output = generate_diffusion_cond(
-            model_obj,
-            steps=steps,
-            cfg_scale=cfg_scale,
-            conditioning=conditioning,
-            negative_conditioning=neg_cond,
-            batch_size=1,
-            sample_size=target_samples,
-            seed=seed,
-            device=str(device),
-            init_audio=init_audio_tuple,
-            init_noise_level=init_noise_level if init_audio_tuple else 1.0,
-            **sampler_kwargs,
-        )
+        with _use_real_k_diffusion_sampling():
+            output = generate_diffusion_cond(
+                model_obj,
+                steps=steps,
+                cfg_scale=cfg_scale,
+                conditioning=conditioning,
+                negative_conditioning=neg_cond,
+                batch_size=1,
+                sample_size=target_samples,
+                seed=seed,
+                device=str(device),
+                init_audio=init_audio_tuple,
+                init_noise_level=init_noise_level if init_audio_tuple else 1.0,
+                **sampler_kwargs,
+            )
 
         if model_management is not None:
             model_management.throw_exception_if_processing_interrupted()
