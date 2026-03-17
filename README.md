@@ -4,7 +4,8 @@ ComfyUI nodes for [**Foundation-1**](https://huggingface.co/RoyalCities/Foundati
 
 ## Screenshots
 
-<!-- TODO: Add screenshots here -->
+<img width="1052" height="809" alt="image" src="https://github.com/user-attachments/assets/50b01da0-ed22-4c48-a014-872eba9a8a7e" />
+
 
 ## Credits
 
